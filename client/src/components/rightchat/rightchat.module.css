@@ -1,0 +1,207 @@
+
+/* header style  */
+
+.chat_header{
+    width: 100%;
+    position: relative;
+    background-color: #222e35;
+    padding: 8px 10px;
+    align-items: center;
+    display: flex;
+    border-left: 1px solid #373737;
+}
+.header_profile{
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    border: 1px solid var(--secondry-color);
+    border-radius: 50%;
+}
+.header_name_sec{
+    padding-left: 12px;
+    color: var(--secondry-color);
+}
+.header_name_sec h3{
+    font-size: 16px;
+    font-weight: 200;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+}
+.header_name_sec span{
+    font-size: 12px;
+    font-weight: 200;
+    text-transform: capitalize;
+}
+.header_user_menu_icon{
+    position: absolute;
+    right: 20px;
+}
+.header_user_menu_icon span{
+    color: #fff;
+    font-size: 25px;
+    opacity: .8;
+    cursor: pointer;
+}
+.header_user_menu_icon span:hover{
+    opacity: 1;
+}
+.header_user_menu{
+    position: absolute;
+    right: 0px;
+    width: 150px;
+    background: #0c1317;
+    z-index: 10;
+    border-radius: 3px;
+    padding: 10px 15px;
+    color: #fff;
+}
+.header_user_menu p {
+    cursor: pointer;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 200;
+}
+.header_user_menu p a{
+    font-size: 14px;
+    font-weight: 200;
+    text-decoration: none;
+    color: var(--secondry-color);
+}
+
+
+/* footer style  */
+
+.footer_style{
+    background: #222e35;
+    border-left: 1px solid #373737;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+}
+
+.emoji_section span{
+    font-size: 25px;
+    cursor: pointer;
+}
+.emoji_section_position{
+    position: absolute;
+    bottom: 60px;
+}
+.document_upload_section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.document_upload_section label{
+    font-size: 26px;
+    display: flex;
+    margin-left: 10px;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+}
+.message_text_section{
+    width: 70%;
+    margin: 4px;
+    min-width: 200px;
+    margin-left: 30px;
+    position: relative;
+}
+
+.message_text_section input{
+    width: 100%;
+    padding: 7px 22px;
+    font-size: 16px;
+    color: var(--dark-color);
+    border: none;
+    outline: none;
+    border-radius: 30px;
+    border: gray;
+    padding-right: 40px;
+}
+.message_text_section button{
+    position: absolute;
+    right: 13px;
+    border: none;
+    outline: none;
+    background: no-repeat;
+    font-size: 24px;
+    top: 4px;
+    cursor: pointer;
+    color: var(--primery-color);
+}
+
+
+/* chat container  */
+.chat_container{
+    width: 100%;
+    /* background-color: rgb(146, 235, 146); */
+    background-image: url(https://free4kwallpapers.com/uploads/originals/2021/02/01/doodle-space-wallpaper.jpg);
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: auto;
+}
+
+.sender_message{
+    text-align: right;
+    display: flex;
+    padding-bottom: 10px;
+    justify-content: flex-end;
+    padding: 10px;
+}
+.receiver_message{
+    display: flex;
+    padding-bottom: 10px;
+    justify-content: flex-start;
+    padding: 10px;
+}
+.sender_message_inner{
+    position: relative;
+    background-color: #2e8000e6;
+    max-width: 40%;
+    padding: 4px 15px;
+    border-radius: 20px;
+    border-bottom-right-radius: 0;
+    text-align: right;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 200;
+}
+.receiver_message_inner{
+    position: relative;
+    background-color: #333333f7;
+    max-width: 40%;
+    padding: 4px 15px;
+    border-radius: 20px;
+    border-top-left-radius: 0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 200;
+    text-align: left;
+}
+.delete_button_style{
+    position: absolute;
+    left: -22px;
+    bottom: 0;
+    color: red;
+    cursor: pointer;
+    font-size: 19px;
+}
+.cancle_delete_message{
+    position: absolute;
+    left: -47px;
+    bottom: 0;
+    cursor: pointer;
+    font-size: 17px;
+    color: yellow;
+}
+
+.time_span{
+    font-size:10px ;
+}

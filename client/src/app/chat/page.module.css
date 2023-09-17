@@ -1,0 +1,18 @@
+.chat_page{
+    width: 100%;
+    overflow: hidden;
+    height: 100vh;
+    padding: 50px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #131c21;
+}
+.chat_container{
+    width: 85%;
+    overflow: hidden;
+    height: 90vh;
+    display: flex;
+    background-color: var(--secondry-color);
+    box-shadow: 0px -1px 17px -10px #9b9292;;
+}
