@@ -1,113 +1,93 @@
 import UserModel from "../models/user_model.js";
-import bcrypt, { compare } from 'bcrypt'
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv"
 import { sendOTPMiddleware } from "../middleware/verifyUser.js";
-import {generateOTP} from '../config/small_function.js'
+import { generateOTP } from '../config/small_function.js'
 
 dotenv.config()
 const secretKey = process.env.secretKey
 
 
 export const Register = async (req, resp) => {
-    const { name, email, gander, description, age, password } = req.body
+    const { name, email, password } = req.body
 
-    const Profile = req.file?.filename || null
+    if (!name) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Enter Your Name',
+        })
+    }
+    if (name.length <= 2) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Name should be minimum 3 characters',
+        })
+    }
 
-    // console.log(Profile)
+    if (!email) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Enter Your Email',
+        })
+    }
+
+    if (!(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email))) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Enter valid Email',
+        })
+    }
+
+    if (!password) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Enter Your Password',
+        })
+    }
+
+    if (password.length <= 5) {
+        return resp.status(422).send({
+            code: 0,
+            status: 0,
+            message: 'Enter Strong Password, minimum 6 characters',
+        })
+    }
+
+
     try {
-
-        //   validat input data 
-        if (!name) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Name',
-            })
-        }
-        if (name.length <= 2) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Name should be minimum 3 characters',
-            })
-        }
-
-        if (!email) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Email',
-            })
-        }
-        if (!(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email))) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter valid Email',
-            })
-        }
-
-        if (!gander) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Gander',
-            })
-        }
-        if (!age) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Age',
-            })
-        }
-        if (!(/^[0-9]+$/.test(age))) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Valid Age ',
-            })
-        }
-        if (!password) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Your Password',
-            })
-        }
-        if (password.length <= 5) {
-            return resp.status(401).send({
-                code: 0,
-                status: 0,
-                message: 'Enter Strong Password, minimum 6 characters',
-            })
-        }
-
         // check user 
 
-        const db_user = await UserModel.find({ email: email })
-        // console.log(db_user)
-        if (!(db_user.length == 0)) {
+        const db_user = await UserModel.findOne({ email: email })
+        console.log('test',db_user)
+        if (db_user) {
             return resp.status(200).send({
                 code: 1,
                 status: 0,
-                message: 'You are email already register In Our Server, Login Now ',
+                message: 'Your email already register In Our Server, Login Now ',
                 email: email
             })
         }
+        else{
+
+        
         //    has password 
         const salt = 10
         const hashedPassword = await bcrypt.hash(password, salt);
         //   save user in db 
-        const user = UserModel({ name, email, gander, description, profile: Profile, username: email, age, password: hashedPassword });
+        const user =  UserModel({ name, email, password: hashedPassword });
         const saveUser = await user.save()
         resp.status(201).send({
             status: 1,
             message: 'User Register Successfully, Login Now',
             user: saveUser
         })
-
+    }
     } catch (error) {
         resp.status(500).send({
             status: 0,
@@ -123,28 +103,28 @@ export const Login = async (req, resp) => {
     try {
         //   validat input data 
         if (!email) {
-            return resp.status(401).send({
+            return resp.status(422).send({
                 code: 0,
                 status: 0,
                 message: 'Enter Your Email',
             })
         }
         if (!(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email))) {
-            return resp.status(401).send({
+            return resp.status(422).send({
                 code: 0,
                 status: 0,
                 message: 'Enter valid Email',
             })
         }
         if (!password) {
-            return resp.status(401).send({
+            return resp.status(422).send({
                 code: 0,
                 status: 0,
                 message: 'Enter Your Password',
             })
         }
         if (password.length <= 5) {
-            return resp.status(401).send({
+            return resp.status(422).send({
                 code: 0,
                 status: 0,
                 message: 'Enter Strong Password, minimum 6 characters',
@@ -155,7 +135,7 @@ export const Login = async (req, resp) => {
         const db_user = await UserModel.findOne({ email: email })
 
         if (!db_user) {
-            return resp.status(401).send({
+            return resp.status(422).send({
                 code: 0,
                 status: 0,
                 message: 'User Not Register, register First',
@@ -175,7 +155,6 @@ export const Login = async (req, resp) => {
                 // create jwt token 
                 const user_data = {
                     email: db_user.email,
-                    username: db_user.username,
                     id: db_user._id
                 }
                 const token = jwt.sign(user_data, secretKey, { expiresIn: '7d' });
@@ -185,7 +164,6 @@ export const Login = async (req, resp) => {
                     message: 'User Login Successfully',
                     user: {
                         email: db_user.email,
-                        username: db_user.username,
                         name: db_user.name,
                         profile: db_user.profile,
                     },
@@ -242,9 +220,7 @@ export const ForgotPasswordRequest = async (req, resp) => {
         }
 
         //  create otp 
-       
         const user_OTP = generateOTP();
-        // console.log('Generated OTP:', user_OTP);
 
         await UserModel.findByIdAndUpdate({ _id: find_user._id }, { otp: user_OTP }, { new: true })
 
@@ -255,7 +231,7 @@ export const ForgotPasswordRequest = async (req, resp) => {
         //   genreate now time 
         const now_date = new Date();
         const now_time = now_date.getTime();
-         
+
         // create jwt token 
         const user_data = {
             email: find_user.email,
@@ -282,6 +258,7 @@ export const ForgotPasswordRequest = async (req, resp) => {
 }
 
 export const ResendForgotPasswordOTP = async (req, resp) => {
+
     const authorization = req.headers['authorization'];
     const decodedToken = jwt.verify(authorization, secretKey);
     //  console.log(decodedToken)
@@ -304,7 +281,7 @@ export const ResendForgotPasswordOTP = async (req, resp) => {
         // console.log('Generated OTP:', user_OTP);
 
         await UserModel.findByIdAndUpdate({ _id: find_user._id }, { otp: user_OTP }, { new: true })
-         
+
         // send  email 
         let text_data = 'Your Forgot Password Resnd OTP is : '
 
@@ -313,7 +290,7 @@ export const ResendForgotPasswordOTP = async (req, resp) => {
         //   genreate now time 
         const now_date = new Date();
         const now_time = now_date.getTime();
-     
+
         // create jwt token 
         const user_data = {
             email: find_user.email,
@@ -326,7 +303,7 @@ export const ResendForgotPasswordOTP = async (req, resp) => {
         return resp.status(200).send({
             code: 1,
             status: 1,
-            developer_msg:'resend OTP Call',
+            developer_msg: 'resend OTP Call',
             message: 'change password accepted, Verify OTP',
             token
         })
@@ -418,14 +395,14 @@ export const EnterForgotPassword = async (req, resp) => {
     //  console.log(decodedToken)
     const { password } = req.body
     if (!password) {
-        return resp.status(401).send({
+        return resp.status(422).send({
             code: 0,
             status: 0,
             message: 'Enter Your Password',
         })
     }
     if (password.length <= 5) {
-        return resp.status(401).send({
+        return resp.status(422).send({
             code: 0,
             status: 0,
             message: 'Enter Strong Password, minimum 6 characters',
@@ -449,7 +426,6 @@ export const EnterForgotPassword = async (req, resp) => {
             user: {
                 name: server_user.name,
                 email: server_user.email,
-                username: server_user.username
             }
         })
 

@@ -1,5 +1,5 @@
 import express from 'express'
-import { UserList, UserDetails, EditUserDetail, ChangeUserPassword, DeleteAccountRequest, DeleteAccountVerifyOTP, EditUserProfile, searchUser } from '../controllers/user_controller.js'
+import { UserDetails, EditUserDetail, ChangeUserPassword, DeleteAccountRequest, DeleteAccountVerifyOTP, EditUserProfile, searchUser } from '../controllers/user_controller.js'
 import { checkLoginMiddleware } from '../middleware/checkUser.js'
 import { uploadUserImage } from '../config/uploadUserImage.js'
 
@@ -7,7 +7,6 @@ import { uploadUserImage } from '../config/uploadUserImage.js'
 // rout object 
 const user_route = express.Router()
 
-user_route.get('/user-list', checkLoginMiddleware, UserList)
 user_route.get('/user-details', checkLoginMiddleware, UserDetails)
 user_route.post('/edit-user-detail', checkLoginMiddleware, uploadUserImage.single("profile"), EditUserDetail)
 user_route.post('/edit-user-profile', checkLoginMiddleware, uploadUserImage.single("profile"), EditUserProfile)

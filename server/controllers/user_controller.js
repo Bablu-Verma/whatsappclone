@@ -9,32 +9,6 @@ import { generateOTP } from "../config/small_function.js";
 dotenv.config()
 const secretKey = process.env.secretKey
 
-export const UserList = async (req, resp) => {
-    try {
-        const user_list = await UserModel.find() 
-
-        // console.log(user_list)
-        const user_data = user_list.map( data => ({
-            name:data.name,
-            username:data.username,
-            profile:data.profile
-        }))
-
-        resp.status(200).send({
-            status: 1,
-            message: 'User list',
-            Userlist:user_data
-        })
-
-    } catch (error) {
-        resp.status(500).send({
-            status: 0,
-            message: 'Server Error',
-            error
-        })
-    }
-
-}
 
 export const UserDetails = async (req, resp) => {
     const authorization = req.headers['authorization'];
@@ -42,10 +16,24 @@ export const UserDetails = async (req, resp) => {
     try {
         const decodedToken = jwt.verify(authorization, secretKey);
         const user_details = await UserModel.findOne({email:decodedToken.email})
+        if(!user_details){
+            return resp.status(500).send({
+                status: 0,
+                message: 'Try again',
+            })
+        } 
+
         resp.status(200).send({
             status: 1,
             message: 'User Details',
-            user_details:user_details
+            user_details:{
+                name : user_details.name ,
+                email:user_details.email,
+                about:user_details.about,
+                profile:user_details.profile,
+                gander:user_details?.gander,
+                age:user_details?.age   
+            }
         })
         
     } catch (error) {
@@ -64,7 +52,7 @@ export const EditUserDetail = async (req, resp) => {
     const decodedToken = jwt.verify(authorization, secretKey);
 
     console.log(req.body)
-    const { name, description, age } = req.body
+    const { name, about, age, gander } = req.body
 
     const Profile = req.file?.filename || null
     
@@ -104,7 +92,7 @@ export const EditUserDetail = async (req, resp) => {
         //   update user in db 
 
         if(Profile === null){
-            const user_details = await UserModel.findByIdAndUpdate({_id:decodedToken.id},{name, description, age},{ new: true })
+            const user_details = await UserModel.findByIdAndUpdate({_id:decodedToken.id},{name, about,gander, age},{ new: true })
             if (!user_details) {
             return resp.status(404).send({
                 code: 0,
@@ -120,7 +108,7 @@ export const EditUserDetail = async (req, resp) => {
         })
 
         }else{
-            const user_details = await UserModel.findByIdAndUpdate({_id:decodedToken.id},{name, description, age, profile:Profile},{ new: true })
+            const user_details = await UserModel.findByIdAndUpdate({_id:decodedToken.id},{name, about,gander, age, profile:Profile},{ new: true })
             if (!user_details) {
                 return resp.status(404).send({
                     code: 0,
@@ -172,7 +160,7 @@ export const EditUserProfile = async (req, resp) => {
               resp.status(200).send({
                 status: 1,
                 message: 'Your Profile Update Successfully',
-                user_details:user_details
+                user_details:user_details.profile
             })
     
         } 
@@ -192,7 +180,7 @@ export const ChangeUserPassword = async (req, resp) => {
     const authorization = req.headers['authorization'];
     const decodedToken = jwt.verify(authorization, secretKey);
 
-    console.log(req.body)
+    // console.log(req.body)
     const { oldPassword, newPassword } = req.body
 
     if (!newPassword) {
@@ -215,7 +203,7 @@ export const ChangeUserPassword = async (req, resp) => {
         const user_detail =  await UserModel.findOne({_id:decodedToken.id})
 
          const server_password = user_detail.password
-         console.log(server_password)
+        //  console.log(server_password)
 
          bcrypt.compare(oldPassword,server_password, async (err, result) =>{
             if(err){
@@ -237,7 +225,7 @@ export const ChangeUserPassword = async (req, resp) => {
                     message: 'Password Change Successfully',
                     user_details:{
                         email:update_password.email,
-                        username:update_password.username
+                        name:update_password.name
                     }
                 })
             } else {
@@ -298,6 +286,7 @@ export const DeleteAccountRequest = async (req, resp) => {
             id: find_user._id,
             time: now_time
         }
+        
         const token = jwt.sign(user_data, secretKey, { expiresIn: '1d' });
         return resp.status(200).send({
             code: 1,
@@ -398,13 +387,13 @@ export const searchUser = async (req, resp) => {
         $or:[
             {name:{'$regex':search,'$options':'i'}},
             {email:{'$regex':search,'$options':'i'}},
-            {username:{'$regex':search,'$options':'i'}}
         ]
        })
 
        const user_data = search_data.map( data => ({
         name:data.name,
-        username:data.username,
+        id:data._id,
+        email:data.email,
         profile:data.profile
         }))
     

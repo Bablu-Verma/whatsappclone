@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import moment from "moment/moment.js";
+
 
 const MessageSchema = new mongoose.Schema({
     channelId:{
@@ -18,10 +18,6 @@ const MessageSchema = new mongoose.Schema({
     file:{
         type: String
     },
-    create: {
-        type: String,
-        default: moment().format('MMMM Do YYYY, h:mm:ss a'),
-    }, 
 
 }, { timestamps: true });
 

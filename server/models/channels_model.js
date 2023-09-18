@@ -1,28 +1,30 @@
 import mongoose from "mongoose";
-import moment from "moment/moment.js";
+
 
 const channelsSchema = new mongoose.Schema({
-    senderId:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    members:{
+        type:Array,
         require:true 
     },
-    reciverId:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    senderId:{
+        type:String,
         require:true 
     },
     reciverName:{
         type: String,
         require:true 
     },
+    reciverEmail:{
+        type: String,
+        require:true 
+    },
+    lastMessage:{
+        type: String,
+    },
     reciverProfile:{
         type: String, 
     },
-    createChannels: {
-        type: String,
-        default: moment().format('MMMM Do YYYY, h:mm:ss a'),
-    }, 
+    
 }, { timestamps: true });
 
 const channelsModel = mongoose.model('Channels', channelsSchema);
