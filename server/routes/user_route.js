@@ -16,3 +16,4 @@ user_route.post('/delete-account-otp-verify', checkLoginMiddleware, DeleteAccoun
 user_route.post('/search-user', checkLoginMiddleware, searchUser)
 
 export default user_route
+
